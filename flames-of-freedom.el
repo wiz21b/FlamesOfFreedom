@@ -5,7 +5,7 @@
 ;; Version: 1.0
 ;; Keywords: multimedia
 
-;; This code is covered by the GNU's General Public License Version 3.
+;; This code is covered by the GNU's Affero General Public License Version 3.
 
 
 ;;; Code
@@ -90,7 +90,7 @@ Example : '(10 10 10 20 20 30) will give '((10 . 3) (20 . 2) (30 . 1))"
 These are the eternal flames of freedom,
 Showing us light in the darkness of the policy of truth.
 (and an homage to RMS who is having tough times in this year
-2019)"
+2019)."
   (interactive)
   (flames-of-freedom-my-message "These are the eternal flames of freedom,|Showing us light in darkness|beyond the thought police.|Software is our sword,|GPL the great ultimate.|"))
 
@@ -99,15 +99,16 @@ Showing us light in the darkness of the policy of truth.
   "Displays the flames of freedom.
 
 These are the eternal flames of freedom,
-Showing us light in the darkness of the policy of truth.
-(and an homage to RMS who is having tough times in this year
-2019)"
+With this command you can specify your own message to show in the
+flames. The message is a list of sentence separated by \"|\".
+If you just want to stare at a comforting fire, just leave the
+message empty."
 
   (interactive "sMessage to show (sentences separated by |):")
 
   (let* ((window (selected-window))
 	 (flame-buffer-width (window-body-width window))
-	 (flame-buffer-height (+ 1 (window-total-size)))
+	 (flame-buffer-height (+ 3 (window-total-size)))
 	 (l (make-vector flame-buffer-height nil))
 	 (time 0)
 	 (buffer1 (get-buffer-create "FlamesOfFreedomI"))
@@ -207,7 +208,7 @@ Showing us light in the darkness of the policy of truth.
 		  (setq last-time (float-time))
 		  (setq current-msg (% (+ 1 current-msg) (length messages)))))
 
-	    (let* ((pos (/ flame-buffer-height 2))
+	    (let* ((pos (/ (window-total-size) 2))
 		   (blank-line (make-string (- flame-buffer-width 1) ?\  ))
 		   (msg (aref messages current-msg))
 		   (half (/ (- flame-buffer-width (length msg)) 2))
@@ -219,6 +220,8 @@ Showing us light in the darkness of the policy of truth.
 	      (fof-write-line blank-line (- pos 1))
 	      (fof-write-line centered-text pos)
 	      (fof-write-line blank-line (+ pos 1)))))
+
+      ;; Remove useless information
 
       (set-buffer-modified-p nil)
 
