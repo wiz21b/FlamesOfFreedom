@@ -107,7 +107,7 @@ message empty."
   (interactive "sMessage to show (sentences separated by |):")
 
   (let* ((window (selected-window))
-	 (flame-buffer-width (window-body-width window))
+	 (flame-buffer-width (- (window-body-width window) 1))
 	 (flame-buffer-height (+ 3 (window-total-size)))
 	 (l (make-vector flame-buffer-height nil))
 	 (time 0)
