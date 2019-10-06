@@ -11,6 +11,11 @@
 ;;; Code
 
 (defun fof-make-vector-by-step (steps)
+  " Build a vector by steps.
+
+A step is a pair ( what . how-many). steps is a list of steps.
+Example : with ( ( 'a' . 1 ) ( 'b' . 2 ) ) will return [ 'a' 'b' 'b' ] "
+
   (cond ((null steps) [ ] )
 	(1 (let ( (step (car steps)))
 	     (vconcat (make-vector (car step) (cdr step))
@@ -71,12 +76,6 @@ Example : '(10 10 10 20 20 30) will give '((10 . 3) (20 . 2) (30 . 1))"
 			  (10 . '(:foreground "white" :background "white")))))
 
 
-(defun fof-initialize-buffer (b)
-  (set-buffer b) ;; erase-buffer works only on current buffer
-  (buffer-disable-undo b)
-)
-
-
 (defun fof-write-line (text pos)
   (goto-char 0)
   (forward-line pos)
@@ -120,11 +119,6 @@ message empty."
 
     (dotimes (i (length l))
       (aset l i (make-vector flame-buffer-width 0)))
-
-    ;; Pre fill the buffer.  We do that because later on we will
-    ;; replace the content of the buffer character by character
-    ;; (instead of clearing the whole buffer and filling it all over
-    ;; again).
 
     (buffer-disable-undo buffer1)
     (buffer-disable-undo buffer2)
