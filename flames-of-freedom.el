@@ -14,7 +14,9 @@
   "Build a vector by steps.
 
 A step is a pair ( what . how-many). steps is a list of steps.
-Example : with ( ( 'a' . 1 ) ( 'b' . 2 ) ) will return [ 'a' 'b' 'b' ] "
+
+Example : (( 'a' . 1 ) ( 'b' . 2 )) will give
+          [ 'a' 'b' 'b' ] "
 
   (cond ((null steps) [ ] )
 	(1 (let ( (step (car steps)))
@@ -26,7 +28,9 @@ Example : with ( ( 'a' . 1 ) ( 'b' . 2 ) ) will return [ 'a' 'b' 'b' ] "
 
 Input : a vector.
 Output : a list of pair (element . count).
-Example : '(10 10 10 20 20 30) will give '((10 . 3) (20 . 2) (30 . 1))"
+
+Example : '(10 10 10 20 20 30) will give
+          '((10 . 3) (20 . 2) (30. 1))"
 
   ;; This was originally written as a tail recursive function.
   ;; However this brought emacs to its limits (and it raised error
@@ -65,15 +69,16 @@ Example : '(10 10 10 20 20 30) will give '((10 . 3) (20 . 2) (30 . 1))"
 			      (10 . #x2593))))
 
 (defconst fof-int-to-faces
-  (fof-make-vector-by-step '( (1  . (:foreground "grey" :background "black"))
-                              (2  . (:foreground "grey" :background "black"))
-                              (2  . (:foreground "grey" :background "black"))
-                              (2  . (:foreground "orange" :background "grey"))
-                              (3  . (:foreground "orange" :background "red"))
-                              (4  . (:foreground "red" :background "yellow"))
-                              (4  . (:foreground "yellow" :background "yellow"))
-                              (10 . (:foreground "white" :background "yellow"))
-                              (10 . (:foreground "white" :background "white")))))
+  (fof-make-vector-by-step
+   '((1  . (:foreground "grey"   :background "black"))
+     (2  . (:foreground "grey"   :background "black"))
+     (2  . (:foreground "grey"   :background "black"))
+     (2  . (:foreground "orange" :background "grey"))
+     (3  . (:foreground "orange" :background "red"))
+     (4  . (:foreground "red"    :background "yellow"))
+     (4  . (:foreground "yellow" :background "yellow"))
+     (10 . (:foreground "white"  :background "yellow"))
+     (10 . (:foreground "white"  :background "white")))))
 
 (defun fof-write-line (text pos)
   (goto-char 0)
