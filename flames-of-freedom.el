@@ -136,11 +136,12 @@ of its characters."
    l
    "\n"))
 
+;; This accelerates things by +/- 7%
 (byte-compile 'fof-dups)
 (byte-compile 'fof-update-flames)
 (byte-compile 'fof-flames-to-string)
 
-(defun flames-of-freedom-my-message (&optional the-message)
+(defun flames-of-freedom-my-message (&optional the-message testing)
   "Displays the flames of freedom.
 
 These are the eternal flames of freedom (and an homage to RMS who
@@ -158,60 +159,39 @@ leave the message empty."
 	 (flame-buffer-width (- (window-body-width window) 1))
 	 (flame-buffer-height (+ 3 (window-total-size)))
 	 (l (make-vector flame-buffer-height nil))
-	 (time 0)
-	 (buffer1 (get-buffer-create "FlamesOfFreedomI"))
-	 (buffer2 (get-buffer-create "FlamesOfFreedoml"))
+	 (buffer1 (get-buffer-create "FlamesOfFreedom"))
 	 (messages (vconcat (split-string the-message "|")))
 	 (current-msg 0)
+	 (drawn-frames 0)
+	 (drawn-frames-benchmarking 0)
+	 (start-time (float-time))
+	 (passed-time 0)
 	 (last-time (float-time)))
 
     ;; help testing by makeing excution results repeatable.
-    (random "alphabravo")
+    (if testing (random "alphabravo"))
 
     (dotimes (i (length l))
       (aset l i (make-vector flame-buffer-width 0)))
 
     (buffer-disable-undo buffer1)
-    (buffer-disable-undo buffer2)
-
-    (set-window-buffer window buffer2)
-    (set-buffer buffer2)
-
+    (set-window-buffer window buffer1)
+    (set-buffer buffer1)
 
     (while (not (input-pending-p))
 
       ;; Computing the flames
 
-      (fof-update-flames l flame-buffer-width flame-buffer-height time)
+      (fof-update-flames l flame-buffer-width flame-buffer-height drawn-frames)
 
-      ;; That's screen flipping in emacs :-)
+      ;; Displaying the flames in the buffer (actually replacing the
+      ;; content of the buffer). This avoids double buffering but
+      ;; doesn't make things significally faster.
 
-      ;; This seems to be on optimization. My interpretation is that
-      ;; when emacs hides a buffer, its display is not updated anymore
-      ;; (of course). So when I modify the buffer, I spare the
-      ;; updates. Proof : If I use just one buffer, things go much
-      ;; slower.
-
-      (cond ((eq (current-buffer) buffer1)
-	     (set-window-buffer window buffer1 t)
-	     (set-buffer buffer2))
-	    ((eq (current-buffer) buffer2)
-	     (set-window-buffer window buffer2 t)
-	     (set-buffer buffer1)))
-
-      ;; Remember emacs favor processing/input over display so if I
-      ;; don't ask, redisplay never get a chance to occur.
-
-      (redisplay)
-
-      ;; Displaying the flames in the buffer
-
-      (erase-buffer)
-
-      ;; FIXME Test (setf (buffer-substring start end) new-string)
-
-      (insert
-       (fof-flames-to-string (seq-take l (window-total-size))))
+      (let ((big-string (fof-flames-to-string (seq-take l (window-total-size)))))
+	(if (> (buffer-size) 1000)
+	    (setf (buffer-substring 1 (- (length big-string) 0)) big-string)
+	  (insert big-string)))
 
       ;; Display the messages in the middle of the screen
 
@@ -238,17 +218,29 @@ leave the message empty."
 
       ;; Remove useless information
 
-      (set-buffer-modified-p nil)
+      (set-buffer-modified-p nil) ;; with-silent-modification shows buffer modified indicator anyway
 
       ;; Make sure the window will display the buffer from its top
 
-      (set-window-start window 0)
-      (goto-char 0)
+      (set-window-start window 0) ;; !!! This results in a 10% performance improvement. Dont't know why
 
-      (setq time (+ 1 time)))
+      ;; Remember emacs favor processing/input over display so if I
+      ;; don't ask, redisplay never get a chance to occur.
+
+      (goto-char 1) ;; Dunno why, but other values don't work as expected
+      (redisplay)
+
+      (if (and testing (< passed-time 10))
+	  (progn
+	    (setq passed-time (- (float-time) start-time))
+	    (setq drawn-frames-benchmarking (1+ drawn-frames-benchmarking))))
+
+      (setq drawn-frames (+ 1 drawn-frames)))
+
+    (if testing
+	(message (format "%d frames drawn in %d seconds,  %f fps" drawn-frames-benchmarking passed-time (/ drawn-frames passed-time))))
 
 
-    (kill-buffer buffer2)
     (kill-buffer buffer1)
 
     ;; Make sure that the key the user has typed to exit our program
@@ -265,7 +257,7 @@ is having tough times in this year 2019).
 
 A little poem is displayed."
   (interactive)
-  (flames-of-freedom-my-message "These are the eternal flames of freedom,|Showing us light in darkness|beyond the thought police.|Software is our sword,|GPL the great ultimate.|"))
+  (flames-of-freedom-my-message "These are the eternal flames of freedom,|Showing us light in darkness|beyond the thought police.|Software is our sword,|GPL the great ultimate.|" 1))
 
 
 (flames-of-freedom-default)
