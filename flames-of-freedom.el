@@ -137,7 +137,6 @@ message empty."
 	  (let ((factor (if (< time flame-buffer-width)
 			   (truncate (+ 1 (* 35 (/ (float time) flame-buffer-width))))
 			  36)))
-	    ;;(message (princ factor))
 	    (dotimes (i flame-buffer-width)
 	      (aset (aref l (- flame-buffer-height 1))
 		    i (random factor)))))
@@ -190,7 +189,7 @@ message empty."
 
 	  (setq i (+ i 1))))
 
-      ;; Display the message sin the middle of the screen
+      ;; Display the messages in the middle of the screen
 
       (if (and the-message (> (length the-message) 0))
 
@@ -233,7 +232,7 @@ message empty."
     (kill-buffer buffer2)
     (kill-buffer buffer1)
 
-    ;; Make sure that the key the user has typed to exit our mode
+    ;; Make sure that the key the user has typed to exit our program
     ;; doesn't show up in its buffer
     (discard-input)))
 
