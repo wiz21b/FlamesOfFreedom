@@ -85,10 +85,10 @@ Example : '(10 10 10 20 20 30) will give '((10 . 3) (20 . 2) (30 . 1))"
 (defun flames-of-freedom-default ()
   "Displays the flames of freedom.
 
-These are the eternal flames of freedom,
-Showing us light in the darkness of the policy of truth.
-(and an homage to RMS who is having tough times in this year
-2019)."
+These are the eternal flames of freedom (and an homage to RMS who
+is having tough times in this year 2019).
+
+A little poem is displayed."
   (interactive)
   (flames-of-freedom-my-message "These are the eternal flames of freedom,|Showing us light in darkness|beyond the thought police.|Software is our sword,|GPL the great ultimate.|"))
 
@@ -96,11 +96,12 @@ Showing us light in the darkness of the policy of truth.
 (defun flames-of-freedom-my-message (&optional the-message)
   "Displays the flames of freedom.
 
-These are the eternal flames of freedom,
-With this command you can specify your own message to show in the
-flames. The message is a list of sentences separated by \"|\".
-If you just want to stare at a comforting fire, just leave the
-message empty."
+These are the eternal flames of freedom (and an homage to RMS who
+is having tough times in this year 2019).
+
+A message is displayed. It is a list of sentences separated by
+\"|\".  If you just want to stare at a comforting fire, just
+leave the message empty."
 
   (interactive "sMessage to show (sentences separated by |):")
 
