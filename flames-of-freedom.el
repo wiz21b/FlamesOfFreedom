@@ -169,6 +169,11 @@ leave the message empty."
 	     (set-window-buffer window buffer2 t)
 	     (set-buffer buffer1)))
 
+      ;; Remember emacs favor processing over display so if I don't ask,
+      ;; redisplay never get a chance to occur.
+
+      (redisplay)
+
       ;; Displaying the flames in the buffer
 
       (erase-buffer)
@@ -225,11 +230,6 @@ leave the message empty."
 
       (set-window-start window 0)
       (goto-char 0)
-
-      ;; Remmber emacs favor processing over display so if I don't ask,
-      ;; redisplay never get a chance to occur.
-
-      (redisplay)
 
       (setq time (+ 1 time)))
 
