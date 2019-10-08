@@ -11,7 +11,7 @@
 ;;; Code
 
 (defun fof-make-vector-by-step (steps)
-  " Build a vector by steps.
+  "Build a vector by steps.
 
 A step is a pair ( what . how-many). steps is a list of steps.
 Example : with ( ( 'a' . 1 ) ( 'b' . 2 ) ) will return [ 'a' 'b' 'b' ] "
@@ -29,7 +29,7 @@ Output : a list of pair (element . count).
 Example : '(10 10 10 20 20 30) will give '((10 . 3) (20 . 2) (30 . 1))"
 
   ;; This was originally written as a tail recursive function.
-  ;; However this brought emacs to the its limits (and it raised error
+  ;; However this brought emacs to its limits (and it raised error
   ;; because stack depth). So I rewrote it in a more imperative way.
 
   (let ( (i 1)
@@ -56,13 +56,13 @@ Example : '(10 10 10 20 20 30) will give '((10 . 3) (20 . 2) (30 . 1))"
 
 
 (defconst fof-int-to-blocks
-  (fof-make-vector-by-step '( (1 . #x20)
-			  (2 . ?.)
-			  (2 . #x2591)
-			  (5 . #x2592)
-			  (8 . #x2592)
-			  (10 . #x2592)
-			  (10 . #x2593) )))
+  (fof-make-vector-by-step '( (1  . #x20)
+			      (2  . ?.)
+			      (2  . #x2591)
+			      (5  . #x2592)
+			      (8  . #x2592)
+			      (10 . #x2592)
+			      (10 . #x2593))))
 
 (defconst fof-int-to-faces
   (fof-make-vector-by-step '( (1  . (:foreground "grey" :background "black"))
