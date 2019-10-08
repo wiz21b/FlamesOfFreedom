@@ -113,8 +113,7 @@ message empty."
 	 (buffer2 (get-buffer-create "FlamesOfFreedoml"))
 	 (messages (vconcat (split-string the-message "|")))
 	 (current-msg 0)
-	 (last-time (float-time))
-	 )
+	 (last-time (float-time)))
 
     (dotimes (i (length l))
       (aset l i (make-vector flame-buffer-width 0)))
