@@ -98,7 +98,7 @@ Showing us light in the darkness of the policy of truth.
 
 These are the eternal flames of freedom,
 With this command you can specify your own message to show in the
-flames. The message is a list of sentence separated by \"|\".
+flames. The message is a list of sentences separated by \"|\".
 If you just want to stare at a comforting fire, just leave the
 message empty."
 
@@ -148,14 +148,13 @@ message empty."
       (dotimes (i (- (length l) 1))
 	(let ( (v (aref l (+ i 1)))
 	       (v2 (aref l i))
-	       (j 1) )
-	  (dotimes (z (- flame-buffer-width 2))
-	    (aset v2 j
+	       (width (- flame-buffer-width 2)))
+	  (dotimes (z width)
+	    (aset v2 (1+ z)
 		  (/
-		   (+ (aref v (+ 1 j)) (aref v (- j 0)) (aref v (- j 1))
-		      (aref v2 j) (- (random 4) 1))
-		   4))
-	    (setq j (+ 1 j)))))
+		   (+ (aref v (+ 2 z)) (aref v (1+ z)) (aref v z)
+		      (aref v2 (1+ z)) (- (random 4) 1))
+		   4)))))
 
       ;; That's screen flipping in emacs :-)
 
@@ -223,10 +222,11 @@ message empty."
       (set-window-start window 0)
       (goto-char 0)
 
-      ;; Leave a bit of time helps buffer refresh (maybe I should
-      ;; force refresh instead of this hack ?)
+      ;; Remmber emacs favor processing over display so if I don't ask,
+      ;; redisplay never get a chance to occur.
 
-      (sit-for 0.01)
+      (redisplay)
+
       (setq time (+ 1 time)))
 
 
