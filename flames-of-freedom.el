@@ -88,7 +88,7 @@ Example : '(10 10 10 20 20 30) will give
 
 
 
-(defun fof-update-flames (l flame-buffer-width flame-buffer-height time)
+(defun fof-update-flames (l flame-buffer-width time)
 
   ;; The lowest line of the flames is random.  I don't update it
   ;; too often so that the flames look nicer.
@@ -96,9 +96,10 @@ Example : '(10 10 10 20 20 30) will give
   (if (= 0 (% time 5))
       (let ((factor (if (< time flame-buffer-width)
 			(truncate (+ 1 (* 35 (/ (float time) flame-buffer-width))))
-		      36)))
+		      36))
+	    (last-line (- (length l) 1)))
 	(dotimes (i flame-buffer-width)
-	  (aset (aref l (- flame-buffer-height 1))
+	  (aset (aref l last-line)
 		i (random factor)))))
 
   ;; Just compute the flames as usual. Add a bit of randomness to
@@ -159,7 +160,7 @@ leave the message empty."
 	 (flame-buffer-width (- (window-body-width window) 1))
 	 (flame-buffer-height (+ 3 (window-total-size)))
 	 (l (make-vector flame-buffer-height nil))
-	 (buffer1 (get-buffer-create "FlamesOfFreedom"))
+	 (buffer1 (get-buffer-create "Flames Of Freedom"))
 	 (messages (vconcat (split-string the-message "|")))
 	 (current-msg 0)
 	 (drawn-frames 0)
@@ -182,16 +183,21 @@ leave the message empty."
 
       ;; Computing the flames
 
-      (fof-update-flames l flame-buffer-width flame-buffer-height drawn-frames)
+      (fof-update-flames l flame-buffer-width drawn-frames)
 
       ;; Displaying the flames in the buffer (actually replacing the
       ;; content of the buffer). This avoids double buffering but
       ;; doesn't make things significally faster.
 
-      (let ((big-string (fof-flames-to-string (seq-take l (window-total-size)))))
+      (let ((big-string (fof-flames-to-string
+			 (seq-take l (min (length l) (window-total-size))))))
 	(if (> (buffer-size) 1000)
-	    (setf (buffer-substring 1 (- (length big-string) 0)) big-string)
-	  (insert big-string)))
+	    (progn
+	      ;; buffer-substring "end" index is not inclusive (see emacs
+	      ;; documentation example)
+	      (setf (buffer-substring 1 (+ (length big-string) 1)) big-string))
+	  (progn
+	    (insert big-string))))
 
       ;; Display the messages in the middle of the screen
 
