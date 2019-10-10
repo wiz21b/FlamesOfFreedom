@@ -223,7 +223,7 @@ leave the message empty."
   (let* ((window (selected-window))
 
 	 ;; -1 seems necessary for this to work in emacs-nw
-	 (flame-buffer-width (- (window-body-width window) 0))
+	 (flame-buffer-width (- (window-body-width window) 1))
 	 (flame-buffer-height (+ 3 (window-total-size)))
 	 (l (fof-make-flames-buffer flame-buffer-width flame-buffer-height))
 	 (buffer1 (get-buffer-create "Flames Of Freedom"))
