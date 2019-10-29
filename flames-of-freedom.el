@@ -39,7 +39,7 @@
 
 ;; * Using set-text-properties directly on buffer seems faster than
 ;;   putting properties on strings and then inserting the string+props
-;;   in the buffer
+;;   in the buffer.
 
 ;; Things that didn't improve speed :
 
@@ -61,7 +61,7 @@
 ;;   performance are the same.
 
 ;; * Replacing the buffer (setf (buffer-substring ...))  instead of
-;;   erasing/recreating it is not faster.
+;;   erasing/recreating, not faster.
 
 
 (defun fof-make-vector-by-step (steps)
