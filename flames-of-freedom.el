@@ -1,15 +1,22 @@
-;; -*-lexical-binding: t;-*-
-;;; flames-of-freedom.el --- The flames of freedom
+;;; flames-of-freedom.el --- The flames of freedom  -*-coding: utf-8-dos; lexical-binding: t; -*-
 
 ;; Copyright (C) 2019 Stéphane Champailler
+
 ;; Author: Stéphane Champailler <schampailler@skynet.be>
 ;; Version: 1.0
 ;; Keywords: multimedia
+;; URL: https://github.com/wiz21b/FlamesOfFreedom
+;; Package-Requires: ( (emacs "25.1") )
 
 ;; This code is covered by the GNU's Affero General Public License Version 3.
 
+;;; Commentary:
 
-;;; Code
+;; These are the eternal flames of freedom (and an homage to RMS who
+;; is having tough times in this year 2019).
+
+
+;;; Code:
 
 ;; Although this project started as reflexion on the free software
 ;; movement it ended up being an exercise in optimization. The
@@ -64,24 +71,23 @@
 ;;   erasing/recreating, not faster.
 
 
-(defun fof-make-vector-by-step (steps)
-  "Build a vector by steps.
+(defun flames-of-freedom-make-vector-by-step (steps)
+  "Build a vector by STEPS.
 
-A step is a pair ( what . how-many). steps is a list of steps.
+A step is a pair ( what .  how many).  STEPS is a list of steps.
 
 Example : (( 'a' . 1 ) ( 'b' . 2 )) will give
-          [ 'a' 'b' 'b' ] "
+          [ 'a' 'b' 'b' ]"
 
   (cond ((null steps) [ ] )
 	(1 (let ( (step (car steps)))
 	     (vconcat (make-vector (car step) (cdr step))
-		      (fof-make-vector-by-step (cdr steps)))))))
+		      (flames-of-freedom-make-vector-by-step (cdr steps)))))))
 
 
-(defun fof-dups (l)
-  "Count elements in a vector.
+(defun flames-of-freedom-dups (l)
+  "Count elements in vector L.
 
-Input : a vector.
 Output : a list of pair (element . count).
 
 Example : '(10 10 10 20 20 30) will give
@@ -113,19 +119,19 @@ Example : '(10 10 10 20 20 30) will give
 
     (nreverse ret-list)))
 
-(defconst fof-message-separator "|")
+(defconst flames-of-freedom-message-separator "|")
 
-(defconst fof-message-show-time 3)
+(defconst flames-of-freedom-message-show-time 3)
 
-(defconst fof-int-to-blocks
-  (fof-make-vector-by-step '( (1  . ?\ )
+(defconst flames-of-freedom-int-to-blocks
+  (flames-of-freedom-make-vector-by-step '( (1  . ?\ )
 			      (2  . ?.)
 			      (2  . #x2591)
 			      (23 . #x2592)
 			      (10 . #x2593))))
 
-(defconst fof-int-to-faces
-  (fof-make-vector-by-step
+(defconst flames-of-freedom-int-to-faces
+  (flames-of-freedom-make-vector-by-step
    '((5  . (face (:foreground "grey"   :background "black")))
      (2  . (face (:foreground "orange" :background "grey")))
      (3  . (face (:foreground "orange" :background "red")))
@@ -135,23 +141,30 @@ Example : '(10 10 10 20 20 30) will give
      (10 . (face (:foreground "white"  :background "white"))))))
 
 
-(defun fof-write-line (text pos)
+(defun flames-of-freedom-write-line (text pos)
+  "Write a TEXT line at some POS in the current buffer."
   (goto-char (point-min))
   (forward-line pos)
   (delete-region (point) (+ (point) (length text)))
   (insert (propertize text 'face '(:foreground "white" :background "black"))))
 
-(defun fof-make-flames-buffer (flame-buffer-width flame-buffer-height)
+(defun flames-of-freedom-make-flames-buffer (flame-buffer-width flame-buffer-height)
   "The buffer in which the flames are computed is a grid of integers.
-It's represented by a vector of vectors. This function initializes
-such a grid."
+It's represented by a vector of vectors.  This function
+initializes such a grid.  The grid size is FLAME-BUFFER-WIDTH x
+FLAME-BUFFER-HEIGHT."
 
   (let ( (l (make-vector flame-buffer-height nil)))
     (dotimes (i flame-buffer-height)
       (aset l i (make-vector flame-buffer-width 0)))
     l))
 
-(defun fof-update-flames (l flame-buffer-width time)
+(defun flames-of-freedom-update-flames (l flame-buffer-width time)
+  "Update the flame grid in L.
+
+The grid has width FLAME-BUFFER-WIDTH.  The TIME gives an
+indication of how much time has passed.  It's useful to throttle
+some effects."
 
   ;; The lowest line of the flames is random.  I don't update it
   ;; too often so that the flames look nicer.
@@ -179,10 +192,11 @@ such a grid."
 		  (aref v2 (1+ z)) (- (random 4) 1))
 	       4))))))
 
-(defun fof-flames-to-string (l)
-  "Build a big string representing the whole frame buffer.
-The string has properties that tell the colour of each
-of its characters."
+(defun flames-of-freedom-flames-to-string (l)
+  "Build a big string representing the whole flame grid L.
+
+The string has properties that tell the colour of each of its
+characters."
 
   (let* ((width-base (length (aref l 1)))
 	 (width (+ 1 (length (aref l 1))))
@@ -192,7 +206,7 @@ of its characters."
     (dotimes (y (length l))
       (let ((line (aref l y)))
 	(dotimes (x width-base)
-	  (aset bigv (+ i x) (aref fof-int-to-blocks (aref line x)))))
+	  (aset bigv (+ i x) (aref flames-of-freedom-int-to-blocks (aref line x)))))
 
       (setq i (+ width i -1))
       (aset bigv i ?\n )
@@ -201,28 +215,33 @@ of its characters."
   (concat bigv)))
 
 
-(defun fof-flames-to-string-props (l)
+(defun flames-of-freedom-flames-to-string-props (l)
+  "Make appropriate (i.e. with nice flame coulours) text properties oout of the flame grid L."
+
   (let ((i 1))
     (dotimes (y (length l))
 
-      (let ((line-props (fof-dups (aref l y))))
+      (let ((line-props (flames-of-freedom-dups (aref l y))))
 	;; Using mapc because it's made for "side effects" (see emacs doc.)
 	(mapc (lambda (p)
-		(set-text-properties i (+ i (cdr p)) (aref fof-int-to-faces (car p)))
+		(set-text-properties i (+ i (cdr p)) (aref flames-of-freedom-int-to-faces (car p)))
 		(setq i (+ i (cdr p))))
 	      line-props))
       ;; skip \n at the end of each line
       (setq i (+ i 1)))))
 
+;;;###autoload
 (defun flames-of-freedom-my-message (&optional the-message testing)
   "Displays the Flames of Freedom.
 
 These are the eternal flames of freedom (and an homage to RMS who
 is having tough times in this year 2019).
 
-A message is displayed. It is a list of sentences separated by
+THE-MESSAGE is displayed.  It is a list of sentences separated by
 \"|\".  If you just want to stare at a comforting fire, just
-leave the message empty."
+leave the message empty.
+
+If TESTING is set, then some debugging information is displayed."
 
   (interactive "sMessage to show (sentences separated by |):")
 
@@ -231,9 +250,9 @@ leave the message empty."
 	 ;; -1 seems necessary for this to work in emacs-nw
 	 (flame-buffer-width (- (window-body-width window) 1))
 	 (flame-buffer-height (+ 3 (window-total-size)))
-	 (l (fof-make-flames-buffer flame-buffer-width flame-buffer-height))
+	 (l (flames-of-freedom-make-flames-buffer flame-buffer-width flame-buffer-height))
 	 (buffer1 (get-buffer-create "Flames Of Freedom"))
-	 (messages (vconcat (split-string the-message fof-message-separator)))
+	 (messages (vconcat (split-string the-message flames-of-freedom-message-separator)))
 	 (current-msg 0)
 	 (drawn-frames 0)
 	 (drawn-frames-benchmarking 0)
@@ -261,22 +280,22 @@ leave the message empty."
 
 	  ;; Computing the flames
 
-	  (fof-update-flames l flame-buffer-width drawn-frames)
+	  (flames-of-freedom-update-flames l flame-buffer-width drawn-frames)
 
 	  ;; Displaying the flames in the buffer.
 
 	  (let* ((sub-vec (seq-take l (min (length l) (window-total-size))))
-		 (big-string (fof-flames-to-string sub-vec)))
+		 (big-string (flames-of-freedom-flames-to-string sub-vec)))
 	    (erase-buffer)
 	    (insert big-string)
-	    (fof-flames-to-string-props sub-vec))
+	    (flames-of-freedom-flames-to-string-props sub-vec))
 
 	  ;; Display the messages in the middle of the screen
 
 	  (if (and the-message (> (length the-message) 0))
 
 	      (progn
-		(if (> (float-time) (+ fof-message-show-time last-time))
+		(if (> (float-time) (+ flames-of-freedom-message-show-time last-time))
 		    (progn
 		      (setq last-time (float-time))
 		      (setq current-msg (% (+ 1 current-msg) (length messages)))))
@@ -290,9 +309,9 @@ leave the message empty."
 					      (make-string half ?\ )
 					      (if (< (+ (* half 2) (length msg)) flame-buffer-width) " "))))
 
-		  (fof-write-line blank-line (- pos 1))
-		  (fof-write-line centered-text pos)
-		  (fof-write-line blank-line (+ pos 1)))))
+		  (flames-of-freedom-write-line blank-line (- pos 1))
+		  (flames-of-freedom-write-line centered-text pos)
+		  (flames-of-freedom-write-line blank-line (+ pos 1)))))
 
 	  ;; Remove useless information
 
@@ -312,7 +331,7 @@ leave the message empty."
 		(if (> passed-time 10)
 		    (progn
 		      (setq drawn-frames-benchmarking drawn-frames)
-		      (message (format "%d frames drawn in %d seconds,  %f fps"
+		      (message (format "%d frames drawn in %d seconds,  %.1f fps"
 				       drawn-frames-benchmarking passed-time (/ drawn-frames passed-time)))))))
 
 	  (setq drawn-frames (+ 1 drawn-frames)))
@@ -325,6 +344,7 @@ leave the message empty."
 
 
 
+;;;###autoload
 (defun flames-of-freedom-default ()
   "Displays the Flames of Freedom.
 
@@ -339,14 +359,18 @@ A little poem is displayed."
 			  "Showing us light in darkness"
 			  "beyond the thought police."
 			  "Software is our sword,"
-			  "GPL the great ultimate.") fof-message-separator)
+			  "GPL the great ultimate.") flames-of-freedom-message-separator)
    1))
 
 
-(mapc 'byte-compile '(fof-dups
-		      fof-update-flames
-		      fof-flames-to-string
-		      fof-flames-to-string-props))
+(mapc 'byte-compile '(flames-of-freedom-dups
+		      flames-of-freedom-update-flames
+		      flames-of-freedom-flames-to-string
+		      flames-of-freedom-flames-to-string-props))
 
 
-(flames-of-freedom-default)
+;;(flames-of-freedom-default)
+
+(provide 'flames-of-freedom)
+
+;;; flames-of-freedom.el ends here
