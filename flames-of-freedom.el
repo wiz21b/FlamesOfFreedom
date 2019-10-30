@@ -260,7 +260,7 @@ If TESTING is set, then some debugging information is displayed."
 	 (last-time (float-time)))
 
     (cond ( (< (window-total-size) 6) (message "I need a taller window to be shining"))
-	  ( (> (apply 'max (mapcar 'length messages)) flame-buffer-width) (message "I need a wider window to be shining"))
+	  ( (> (apply #'max (mapcar #'length messages)) flame-buffer-width) (message "I need a wider window to be shining"))
       (t (progn
 
 	(if testing
@@ -355,7 +355,7 @@ A little poem is displayed."
 
   (interactive)
   (flames-of-freedom-my-message
-   (mapconcat 'identity '("These are the eternal flames of freedom,"
+   (mapconcat #'identity '("These are the eternal flames of freedom,"
 			  "Showing us light in darkness"
 			  "beyond the thought police."
 			  "Software is our sword,"
