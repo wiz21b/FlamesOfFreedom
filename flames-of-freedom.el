@@ -4,9 +4,9 @@
 
 ;; Author: Stéphane Champailler <schampailler@skynet.be>
 ;; Package-Version: 1.0
+;; Package-Requires: ((emacs "25.1"))
 ;; Keywords: multimedia
 ;; URL: https://github.com/wiz21b/FlamesOfFreedom
-;; Package-Requires: ( (emacs "25.1") )
 
 ;; This code is covered by the GNU's Affero General Public License Version 3.
 
