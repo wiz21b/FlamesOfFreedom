@@ -257,8 +257,8 @@ If TESTING is set, then some debugging information is displayed."
 	 (current-msg 0)
 	 (drawn-frames 0)
 	 (drawn-frames-benchmarking 0)
-	 (start-time (float-time))
-	 (last-time (float-time)))
+	 (start-time-benchmarking (float-time))
+	 (last-time-benchmarking (float-time)))
 
     (cond ( (< (window-total-size) 6) (message "I need a taller window to be shining"))
 	  ( (> (apply #'max (mapcar #'length messages)) flame-buffer-width) (message "I need a wider window to be shining"))
@@ -297,9 +297,9 @@ If TESTING is set, then some debugging information is displayed."
 	  (if (and the-message (> (length the-message) 0))
 
 	      (progn
-		(if (> (float-time) (+ flames-of-freedom-message-show-time last-time))
+		(if (> (float-time) (+ flames-of-freedom-message-show-time last-time-benchmarking))
 		    (progn
-		      (setq last-time (float-time))
+		      (setq last-time-benchmarking (float-time))
 		      (setq current-msg (% (+ 1 current-msg) (length messages)))))
 
 		(let* ((pos (/ (window-total-size) 2))
@@ -328,13 +328,19 @@ If TESTING is set, then some debugging information is displayed."
 
 	  (redisplay)
 
-	  (if (and testing (= drawn-frames-benchmarking 0))
-	      (let ((passed-time (- (float-time) start-time)))
+	  (if testing
+	      (let ((passed-time (- (float-time) start-time-benchmarking)))
 		(if (> passed-time 10)
 		    (progn
-		      (setq drawn-frames-benchmarking drawn-frames)
-		      (message (format "%d frames drawn in %d seconds,  %.1f fps"
-				       drawn-frames-benchmarking passed-time (/ drawn-frames passed-time)))))))
+		      (message (format "%d frames drawn in %.1f seconds, %.1f fps"
+				       drawn-frames-benchmarking
+				       passed-time
+				       (/ drawn-frames-benchmarking passed-time)))
+		      (setq start-time-benchmarking (float-time))
+		      (setq drawn-frames-benchmarking 0)
+		      )
+		  )
+		(setq drawn-frames-benchmarking (+ 1 drawn-frames-benchmarking))))
 
 	  (setq drawn-frames (+ 1 drawn-frames)))
 
@@ -343,7 +349,6 @@ If TESTING is set, then some debugging information is displayed."
 	;; Make sure that the key the user has typed to exit our program
 	;; doesn't show up in its buffer
 	(discard-input))))))
-
 
 
 ;;;###autoload
