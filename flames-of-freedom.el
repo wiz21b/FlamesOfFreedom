@@ -67,7 +67,7 @@
 ;; * Moved face construction outside the loop. Cleaner code,
 ;;   performance are the same.
 
-;; * Replacing the buffer (setf (buffer-substring ...))  instead of
+;; * Replacing the buffer (setf (buffer-substring ...)) instead of
 ;;   erasing/recreating, not faster.
 
 
@@ -97,27 +97,28 @@ Example : '(10 10 10 20 20 30) will give
   ;; However this brought emacs to its limits (and it raised error
   ;; because stack depth). So I rewrote it in a more imperative way.
 
-  (let ( (i 1)
-	 (current-elt (aref l 0))
+  ;; We go from right to left.
+
+  (let ( (i (- (length l) 2))
+	 (current-elt (aref l (- (length l) 1))) ; last one
 	 (current-cnt 1)
 	 (ret-list '()))
 
-    (while (< i (length l))
+    (while (>= i 0)
       (let ( (first-of-rest (aref l i)) )
 	(if (eq current-elt first-of-rest)
-	    (setq current-cnt (+ 1 current-cnt))
+	    (setq current-cnt (1+ current-cnt))
 	  (progn
 	    (setq ret-list (cons (cons current-elt current-cnt) ret-list))
 	    (setq current-elt first-of-rest)
 	    (setq current-cnt 1))))
 
-      (setq i (+ 1 i)))
+      (setq i (- i 1)))
 
     (if (> current-cnt 0)
 	(progn
-	  (setq ret-list (cons (cons current-elt current-cnt) ret-list))))
+	  (setq ret-list (cons (cons current-elt current-cnt) ret-list))))))
 
-    (nreverse ret-list)))
 
 (defconst flames-of-freedom-message-separator "|")
 
@@ -195,8 +196,8 @@ some effects."
 (defun flames-of-freedom-flames-to-string (l)
   "Build a big string representing the whole flame grid L.
 
-The string has properties that tell the colour of each of its
-characters."
+The string is made of graphical characters. The colours should
+be added later."
 
   (let* ((width-base (length (aref l 1)))
 	 (width (+ 1 (length (aref l 1))))
@@ -216,7 +217,7 @@ characters."
 
 
 (defun flames-of-freedom-flames-to-string-props (l)
-  "Make appropriate (i.e. with nice flame coulours) text properties oout of the flame grid L."
+  "Make appropriate (i.e. with nice flame coulours) text properties out of the flame grid L."
 
   (let ((i 1))
     (dotimes (y (length l))
@@ -288,7 +289,8 @@ If TESTING is set, then some debugging information is displayed."
 		 (big-string (flames-of-freedom-flames-to-string sub-vec)))
 	    (erase-buffer)
 	    (insert big-string)
-	    (flames-of-freedom-flames-to-string-props sub-vec))
+	    (flames-of-freedom-flames-to-string-props sub-vec)
+	    )
 
 	  ;; Display the messages in the middle of the screen
 
