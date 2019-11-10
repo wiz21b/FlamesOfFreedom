@@ -209,7 +209,7 @@ be added later."
 	(dotimes (x width-base)
 	  (aset bigv (+ i x) (aref flames-of-freedom-int-to-blocks (aref line x)))))
 
-      (setq i (+ width i -1))
+      (setq i (+ width-base i))
       (aset bigv i ?\n )
       (setq i (1+ i)))
 
