@@ -50,25 +50,25 @@
 
 ;; Things that didn't improve speed :
 
-;; * set-text-properties is not faster then put-text-property
+;; * set-text-properties is not faster than put-text-property
 ;;   in my case (but set-text-properties is cleaner).
 
 ;; * I tried to defsubst some lambda expressions => no noticeable
 ;;   speed improvement.
 
-;; * I tried to transform some variables into a global variable
-;;   (defvar) => no noticeable speed improvement. (hypothesis : global
-;;   variable are easier to reach than local variables).
+;; * I tried to transform some variables into global variables
+;;   (defvar) => no noticeable speed improvement. (hypothesis was :
+;;   global variable are easier to reach than local variables).
 
-;; * I tried double buffering the buffers (hypothesis, emacs displays
-;;   a buffer more efficitenly when it's a window refresh). Bad
-;;   hypothesis, this makes things significantly slower.
+;; * I tried double buffering the buffers (hypothesis was emacs
+;;   displays a buffer more efficitenly when it's a window
+;;   refresh). This made things significantly slower.
 
 ;; * Moved face construction outside the loop. Cleaner code,
 ;;   performance are the same.
 
 ;; * Replacing the buffer (setf (buffer-substring ...))  instead of
-;;   erasing/recreating, not faster.
+;;   erasing/recreating it did not make things faster.
 
 
 (defun flames-of-freedom-make-vector-by-step (steps)
@@ -80,7 +80,7 @@ Example : (( 'a' . 1 ) ( 'b' . 2 )) will give
           [ 'a' 'b' 'b' ]"
 
   (cond ((null steps) [ ] )
-	(1 (let ( (step (car steps)))
+	(1 (let ((step (car steps)))
 	     (vconcat (make-vector (car step) (cdr step))
 		      (flames-of-freedom-make-vector-by-step (cdr steps)))))))
 
@@ -103,7 +103,7 @@ Example : '(10 10 10 20 20 30) will give
 	 (ret-list '()))
 
     (while (< i (length l))
-      (let ( (first-of-rest (aref l i)) )
+      (let ((first-of-rest (aref l i)))
 	(if (eq current-elt first-of-rest)
 	    (setq current-cnt (+ 1 current-cnt))
 	  (progn
@@ -117,6 +117,7 @@ Example : '(10 10 10 20 20 30) will give
 	(progn
 	  (setq ret-list (cons (cons current-elt current-cnt) ret-list))))
 
+    ;; FIXME Dirty, reverse the list building to remove that call
     (nreverse ret-list)))
 
 (defconst flames-of-freedom-message-separator "|")
@@ -154,7 +155,7 @@ It's represented by a vector of vectors.  This function
 initializes such a grid.  The grid size is FLAME-BUFFER-WIDTH x
 FLAME-BUFFER-HEIGHT."
 
-  (let ( (l (make-vector flame-buffer-height nil)))
+  (let ((l (make-vector flame-buffer-height nil)))
     (dotimes (i flame-buffer-height)
       (aset l i (make-vector flame-buffer-width 0)))
     l))
@@ -355,11 +356,13 @@ A little poem is displayed."
 
   (interactive)
   (flames-of-freedom-my-message
-   (mapconcat #'identity '("These are the eternal flames of freedom,"
-			  "Showing us light in darkness"
-			  "beyond the thought police."
-			  "Software is our sword,"
-			  "GPL the great ultimate.") flames-of-freedom-message-separator)
+   (mapconcat #'identity
+	      '("These are the eternal flames of freedom,"
+		"Showing us light in darkness"
+		"beyond the thought police."
+		"Software is our sword,"
+		"GPL the great ultimate.")
+	      flames-of-freedom-message-separator)
    1))
 
 
