@@ -320,7 +320,9 @@ If TESTING is set, then some debugging information is displayed."
 
 	  ;; Make sure the window will display the buffer from its top
 
-	  (set-window-start window 1) ;; !!! This results in a 10% performance improvement. Dont't know why
+	  (set-window-start window 1)   ; !!! This results in a big performance
+					; improvement, must be done before each
+					; call to redisplay. Dont't know why.
 
 	  ;; Remember emacs favor processing/input over display so if I
 	  ;; don't ask, redisplay never get a chance to occur.
@@ -336,9 +338,7 @@ If TESTING is set, then some debugging information is displayed."
 				       passed-time
 				       (/ drawn-frames-benchmarking passed-time)))
 		      (setq start-time-benchmarking (float-time))
-		      (setq drawn-frames-benchmarking 0)
-		      )
-		  )
+		      (setq drawn-frames-benchmarking 0)))
 		(setq drawn-frames-benchmarking (+ 1 drawn-frames-benchmarking))))
 
 	  (setq drawn-frames (+ 1 drawn-frames)))
