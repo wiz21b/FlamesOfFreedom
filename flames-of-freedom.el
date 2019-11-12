@@ -97,28 +97,27 @@ Example : '(10 10 10 20 20 30) will give
   ;; However this brought emacs to its limits (and it raised error
   ;; because stack depth). So I rewrote it in a more imperative way.
 
-  (let ( (i 1)
-	 (current-elt (aref l 0))
+  ;; We go from right to left.
+
+  (let ( (i (- (length l) 2))
+	 (current-elt (aref l (- (length l) 1))) ; last one
 	 (current-cnt 1)
 	 (ret-list '()))
 
-    (while (< i (length l))
-      (let ((first-of-rest (aref l i)))
+    (while (>= i 0)
+      (let ( (first-of-rest (aref l i)) )
 	(if (eq current-elt first-of-rest)
-	    (setq current-cnt (+ 1 current-cnt))
+	    (setq current-cnt (1+ current-cnt))
 	  (progn
 	    (setq ret-list (cons (cons current-elt current-cnt) ret-list))
 	    (setq current-elt first-of-rest)
 	    (setq current-cnt 1))))
 
-      (setq i (+ 1 i)))
+      (setq i (- i 1)))
 
     (if (> current-cnt 0)
 	(progn
-	  (setq ret-list (cons (cons current-elt current-cnt) ret-list))))
-
-    ;; FIXME Dirty, reverse the list building to remove that call
-    (nreverse ret-list)))
+	  (setq ret-list (cons (cons current-elt current-cnt) ret-list))))))
 
 (defconst flames-of-freedom-message-separator "|")
 
@@ -196,8 +195,8 @@ some effects."
 (defun flames-of-freedom-flames-to-string (l)
   "Build a big string representing the whole flame grid L.
 
-The string has properties that tell the colour of each of its
-characters."
+The string is made of graphical characters. The colours should
+be added later."
 
   (let* ((width-base (length (aref l 1)))
 	 (width (+ 1 (length (aref l 1))))
@@ -209,7 +208,7 @@ characters."
 	(dotimes (x width-base)
 	  (aset bigv (+ i x) (aref flames-of-freedom-int-to-blocks (aref line x)))))
 
-      (setq i (+ width i -1))
+      (setq i (+ width-base i))
       (aset bigv i ?\n )
       (setq i (1+ i)))
 
@@ -217,7 +216,7 @@ characters."
 
 
 (defun flames-of-freedom-flames-to-string-props (l)
-  "Make appropriate (i.e. with nice flame coulours) text properties oout of the flame grid L."
+  "Make appropriate (i.e. with nice flame coulours) text properties out of the flame grid L."
 
   (let ((i 1))
     (dotimes (y (length l))
@@ -257,8 +256,8 @@ If TESTING is set, then some debugging information is displayed."
 	 (current-msg 0)
 	 (drawn-frames 0)
 	 (drawn-frames-benchmarking 0)
-	 (start-time (float-time))
-	 (last-time (float-time)))
+	 (start-time-benchmarking (float-time))
+	 (last-time-benchmarking (float-time)))
 
     (cond ( (< (window-total-size) 6) (message "I need a taller window to be shining"))
 	  ( (> (apply #'max (mapcar #'length messages)) flame-buffer-width) (message "I need a wider window to be shining"))
@@ -289,16 +288,17 @@ If TESTING is set, then some debugging information is displayed."
 		 (big-string (flames-of-freedom-flames-to-string sub-vec)))
 	    (erase-buffer)
 	    (insert big-string)
-	    (flames-of-freedom-flames-to-string-props sub-vec))
+	    (flames-of-freedom-flames-to-string-props sub-vec)
+	    )
 
 	  ;; Display the messages in the middle of the screen
 
 	  (if (and the-message (> (length the-message) 0))
 
 	      (progn
-		(if (> (float-time) (+ flames-of-freedom-message-show-time last-time))
+		(if (> (float-time) (+ flames-of-freedom-message-show-time last-time-benchmarking))
 		    (progn
-		      (setq last-time (float-time))
+		      (setq last-time-benchmarking (float-time))
 		      (setq current-msg (% (+ 1 current-msg) (length messages)))))
 
 		(let* ((pos (/ (window-total-size) 2))
@@ -327,13 +327,19 @@ If TESTING is set, then some debugging information is displayed."
 
 	  (redisplay)
 
-	  (if (and testing (= drawn-frames-benchmarking 0))
-	      (let ((passed-time (- (float-time) start-time)))
+	  (if testing
+	      (let ((passed-time (- (float-time) start-time-benchmarking)))
 		(if (> passed-time 10)
 		    (progn
-		      (setq drawn-frames-benchmarking drawn-frames)
-		      (message (format "%d frames drawn in %d seconds,  %.1f fps"
-				       drawn-frames-benchmarking passed-time (/ drawn-frames passed-time)))))))
+		      (message (format "%d frames drawn in %.1f seconds, %.1f fps"
+				       drawn-frames-benchmarking
+				       passed-time
+				       (/ drawn-frames-benchmarking passed-time)))
+		      (setq start-time-benchmarking (float-time))
+		      (setq drawn-frames-benchmarking 0)
+		      )
+		  )
+		(setq drawn-frames-benchmarking (+ 1 drawn-frames-benchmarking))))
 
 	  (setq drawn-frames (+ 1 drawn-frames)))
 
@@ -342,7 +348,6 @@ If TESTING is set, then some debugging information is displayed."
 	;; Make sure that the key the user has typed to exit our program
 	;; doesn't show up in its buffer
 	(discard-input))))))
-
 
 
 ;;;###autoload
