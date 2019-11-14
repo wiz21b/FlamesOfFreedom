@@ -70,6 +70,7 @@
 ;; * Replacing the buffer (setf (buffer-substring ...))  instead of
 ;;   erasing/recreating it did not make things faster.
 
+(require 'seq)
 
 (defun flames-of-freedom-make-vector-by-step (steps)
   "Build a vector by STEPS.
@@ -288,8 +289,7 @@ If TESTING is set, then some debugging information is displayed."
 		 (big-string (flames-of-freedom-flames-to-string sub-vec)))
 	    (erase-buffer)
 	    (insert big-string)
-	    (flames-of-freedom-flames-to-string-props sub-vec)
-	    )
+	    (flames-of-freedom-flames-to-string-props sub-vec))
 
 	  ;; Display the messages in the middle of the screen
 
