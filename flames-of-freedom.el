@@ -18,18 +18,18 @@
 
 ;;; Code:
 
-;; Although this project started as reflexion on the free software
+;; Although this project started as reflection on the free software
 ;; movement it ended up being an exercise in optimization. The
 ;; question became how fast can I draw those flames ? You'll find
 ;; notes below explaining the various things I've tried.
 ;; Interestingly, many attempts to make the code faster didn't result
 ;; in significant performance improvements. This leads me to think
-;; that emacs lisp is very predictible and that the functions provided
-;; by emacs (buffer, text,...) are not optimization friendly (1/ they
+;; that Emacs lisp is very predictable and that the functions provided
+;; by Emacs (buffer, text,...) are not optimization friendly (1/ they
 ;; can't be combined in clever way; 2/ as stated in the documentation,
 ;; calling functions is slow). IMHO, elisp is a language that is
-;; designed to program emacs (and a very mature one at that), not to
-;; make realtime graphics. What a surprise :-)
+;; designed to program Emacs (and a very mature one at that), not to
+;; make real time graphics. What a surprise :-)
 
 ;; Things that improved speed :
 
@@ -60,8 +60,8 @@
 ;;   (defvar) => no noticeable speed improvement. (hypothesis was :
 ;;   global variable are easier to reach than local variables).
 
-;; * I tried double buffering the buffers (hypothesis was emacs
-;;   displays a buffer more efficitenly when it's a window
+;; * I tried double buffering the buffers (hypothesis was Emacs
+;;   displays a buffer more efficiently when it's a window
 ;;   refresh). This made things significantly slower.
 
 ;; * Moved face construction outside the loop. Cleaner code,
@@ -94,7 +94,7 @@ Example : '(10 10 10 20 20 30) will give
           '((10 . 3) (20 . 2) (30. 1))"
 
   ;; This was originally written as a tail recursive function.
-  ;; However this brought emacs to its limits (and it raised error
+  ;; However this brought Emacs to its limits (and it raised error
   ;; because stack depth). So I rewrote it in a more imperative way.
 
   ;; We go from right to left.
@@ -150,6 +150,7 @@ Example : '(10 10 10 20 20 30) will give
 
 (defun flames-of-freedom-make-flames-buffer (flame-buffer-width flame-buffer-height)
   "The buffer in which the flames are computed is a grid of integers.
+
 It's represented by a vector of vectors.  This function
 initializes such a grid.  The grid size is FLAME-BUFFER-WIDTH x
 FLAME-BUFFER-HEIGHT."
@@ -195,12 +196,12 @@ some effects."
 (defun flames-of-freedom-flames-to-string (l)
   "Build a big string representing the whole flame grid L.
 
-The string is made of graphical characters. The colours should
+The string is made of graphical characters.  The colors should
 be added later."
 
   (let* ((width-base (length (aref l 1)))
 	 (width (+ 1 (length (aref l 1))))
-	 (bigv (make-vector (* (length l) width) 0)) ; Recreating the vector is not signifcantly slower.
+	 (bigv (make-vector (* (length l) width) 0)) ; Recreating the vector is not significantly slower.
 	 (i 0))
 
     (dotimes (y (length l))
@@ -216,13 +217,13 @@ be added later."
 
 
 (defun flames-of-freedom-flames-to-string-props (l)
-  "Make appropriate (i.e. with nice flame coulours) text properties out of the flame grid L."
+  "Make appropriate (i.e. with nice flame colors) text properties out of the flame grid L."
 
   (let ((i 1))
     (dotimes (y (length l))
 
       (let ((line-props (flames-of-freedom-dups (aref l y))))
-	;; Using mapc because it's made for "side effects" (see emacs doc.)
+	;; Using mapc because it's made for "side effects" (see Emacs doc.)
 	(mapc (lambda (p)
 		(set-text-properties i (+ i (cdr p)) (aref flames-of-freedom-int-to-faces (car p)))
 		(setq i (+ i (cdr p))))
@@ -288,8 +289,7 @@ If TESTING is set, then some debugging information is displayed."
 		 (big-string (flames-of-freedom-flames-to-string sub-vec)))
 	    (erase-buffer)
 	    (insert big-string)
-	    (flames-of-freedom-flames-to-string-props sub-vec)
-	    )
+	    (flames-of-freedom-flames-to-string-props sub-vec))
 
 	  ;; Display the messages in the middle of the screen
 
@@ -320,9 +320,9 @@ If TESTING is set, then some debugging information is displayed."
 
 	  ;; Make sure the window will display the buffer from its top
 
-	  (set-window-start window 1) ;; !!! This results in a 10% performance improvement. Dont't know why
+	  (set-window-start window 1) ;; !!! This results in a 10% performance improvement. Don't know why
 
-	  ;; Remember emacs favor processing/input over display so if I
+	  ;; Remember Emacs favor processing/input over display so if I
 	  ;; don't ask, redisplay never get a chance to occur.
 
 	  (redisplay)
@@ -336,9 +336,8 @@ If TESTING is set, then some debugging information is displayed."
 				       passed-time
 				       (/ drawn-frames-benchmarking passed-time)))
 		      (setq start-time-benchmarking (float-time))
-		      (setq drawn-frames-benchmarking 0)
-		      )
-		  )
+		      (setq drawn-frames-benchmarking 0)))
+
 		(setq drawn-frames-benchmarking (+ 1 drawn-frames-benchmarking))))
 
 	  (setq drawn-frames (+ 1 drawn-frames)))
