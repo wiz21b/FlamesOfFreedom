@@ -70,6 +70,17 @@
 ;; * Replacing the buffer (setf (buffer-substring ...))  instead of
 ;;   erasing/recreating it did not make things faster.
 
+;; Things I don't quite understand
+
+;; * On my Linux machine, sometimes, the animation is choppy.
+;;   Interestingly it makes little pauses in a very predictable way
+;;   (about twice a second). Restarting Emacs fixes the issue
+;;   sometimes.
+
+;; * The font size affects performance in some unpredictable
+;;   ways. Changing the font size by a single point can cut the speed
+;;   in two.
+
 (require 'seq)
 
 (defun flames-of-freedom-make-vector-by-step (steps)
@@ -326,7 +337,7 @@ If TESTING is set, then some debugging information is displayed."
 					; call to redisplay. Dont't know why.
 
 	  ;; Remember Emacs favor processing/input over display so if I
-	  ;; don't ask, redisplay never get a chance to occur.
+	  ;; don't ask, re-display never get a chance to occur.
 
 	  (redisplay)
 
