@@ -3,7 +3,7 @@
 ;; Copyright (C) 2019 Stéphane Champailler
 
 ;; Author: Stéphane Champailler <schampailler@skynet.be>
-;; Package-Version: 1.0
+;; Package-Version: 1.1
 ;; Package-Requires: ((emacs "25.1"))
 ;; Keywords: multimedia
 ;; URL: https://github.com/wiz21b/FlamesOfFreedom
