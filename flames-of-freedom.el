@@ -3,7 +3,7 @@
 ;; Copyright (C) 2019 Stéphane Champailler
 
 ;; Author: Stéphane Champailler <schampailler@skynet.be>
-;; Package-Version: 1.1
+;; Version: 1.1
 ;; Package-Requires: ((emacs "25.1"))
 ;; Keywords: multimedia
 ;; URL: https://github.com/wiz21b/FlamesOfFreedom
@@ -278,7 +278,7 @@ If TESTING is set, then some debugging information is displayed."
 
 	(if testing
 	    (progn
-	      (message (format "Grid is %d x %d = %d cells" flame-buffer-width flame-buffer-height (* flame-buffer-width flame-buffer-height)))
+	      (message "Grid is %d x %d = %d cells" flame-buffer-width flame-buffer-height (* flame-buffer-width flame-buffer-height))
 	      ;; help testing by making execution results repeatable.
 	      (random "alphabravo")))
 
@@ -345,10 +345,10 @@ If TESTING is set, then some debugging information is displayed."
 	      (let ((passed-time (- (float-time) start-time-benchmarking)))
 		(if (> passed-time 10)
 		    (progn
-		      (message (format "%d frames drawn in %.1f seconds, %.1f fps"
-				       drawn-frames-benchmarking
-				       passed-time
-				       (/ drawn-frames-benchmarking passed-time)))
+		      (message "%d frames drawn in %.1f seconds, %.1f fps"
+			       drawn-frames-benchmarking
+			       passed-time
+			       (/ drawn-frames-benchmarking passed-time))
 		      (setq start-time-benchmarking (float-time))
 		      (setq drawn-frames-benchmarking 0)))
 		(setq drawn-frames-benchmarking (+ 1 drawn-frames-benchmarking))))
