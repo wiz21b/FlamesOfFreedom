@@ -3,7 +3,7 @@
 ;; Copyright (C) 2019 Stéphane Champailler
 
 ;; Author: Stéphane Champailler <schampailler@skynet.be>
-;; Version: 1.1
+;; Version: 1.2
 ;; Package-Requires: ((emacs "25.1"))
 ;; Keywords: multimedia
 ;; URL: https://github.com/wiz21b/FlamesOfFreedom
@@ -67,10 +67,10 @@
 ;; * Moved face construction outside the loop. Cleaner code,
 ;;   performance are the same.
 
-;; * Replacing the buffer (setf (buffer-substring ...))  instead of
+;; * Replacing the buffer (setf (buffer-substring ...)) instead of
 ;;   erasing/recreating it did not make things faster.
 
-;; Things I don't quite understand
+;; Things I don't quite understand :
 
 ;; * On my Linux machine, sometimes, the animation is choppy.
 ;;   Interestingly it makes little pauses in a very predictable way
@@ -79,7 +79,12 @@
 
 ;; * The font size affects performance in some unpredictable
 ;;   ways. Changing the font size by a single point can cut the speed
-;;   in two.
+;;   in two (where I'd expect a few percent loss). Also, using
+;;   smaller fonts sometimes results in faster (!) speed...
+
+;; * Calling (set-window-start window 1) before redisplay increases
+;;   performance significantly.
+
 
 (require 'seq)
 
@@ -133,14 +138,15 @@ Example : '(10 10 10 20 20 30) will give
 
 (defconst flames-of-freedom-message-separator "|")
 
+;; How long each sentence of the message will be displayed, in seconds.
 (defconst flames-of-freedom-message-show-time 3)
 
 (defconst flames-of-freedom-int-to-blocks
   (flames-of-freedom-make-vector-by-step '( (1  . ?\ )
-			      (2  . ?.)
-			      (2  . #x2591)
-			      (23 . #x2592)
-			      (10 . #x2593))))
+					    (2  . ?.)
+					    (2  . #x2591)
+					    (23 . #x2592)
+					    (10 . #x2593))))
 
 (defconst flames-of-freedom-int-to-faces
   (flames-of-freedom-make-vector-by-step
@@ -261,6 +267,7 @@ If TESTING is set, then some debugging information is displayed."
   (let* ((window (selected-window))
 
 	 ;; -1 seems necessary for this to work in emacs-nw
+	 ;; but that's totally empirical.
 	 (flame-buffer-width (- (window-body-width window) 1))
 	 (flame-buffer-height (+ 3 (window-total-size)))
 	 (l (flames-of-freedom-make-flames-buffer flame-buffer-width flame-buffer-height))
@@ -278,7 +285,8 @@ If TESTING is set, then some debugging information is displayed."
 
 	(if testing
 	    (progn
-	      (message "Grid is %d x %d = %d cells" flame-buffer-width flame-buffer-height (* flame-buffer-width flame-buffer-height))
+	      (message "Grid is %d x %d = %d cells"
+		       flame-buffer-width flame-buffer-height (* flame-buffer-width flame-buffer-height))
 	      ;; help testing by making execution results repeatable.
 	      (random "alphabravo")))
 
@@ -337,7 +345,7 @@ If TESTING is set, then some debugging information is displayed."
 					; call to redisplay. Dont't know why.
 
 	  ;; Remember Emacs favor processing/input over display so if I
-	  ;; don't ask, re-display never get a chance to occur.
+	  ;; don't ask, re-display never gets a chance to occur.
 
 	  (redisplay)
 
