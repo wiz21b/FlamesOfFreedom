@@ -103,7 +103,7 @@ Example : (( 'a' . 1 ) ( 'b' . 2 )) will give
 
 
 (defun flames-of-freedom-dups (l)
-  "Count elements in vector L.
+  "Count repeated elements in vector L.
 
 Output : a list of pair (element . count).
 
